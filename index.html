@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AR Coin Collector Game</title>
+
+    <!-- A-Frame and AR.js -->
+    <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/gh/jeromeetienne/AR.js/aframe/build/aframe-ar.js"></script>
+    <script>
+      // Simple collision detection for AR
+      AFRAME.registerComponent("collect-coin", {
+        init: function () {
+          let el = this.el;
+          let sceneEl = document.querySelector("a-scene");
+
+          el.addEventListener("collide", function (e) {
+            // Check if the collided object is the player (camera)
+            if (e.detail.body.el.id === "camera") {
+              el.setAttribute("visible", false); // Hide the coin
+              sceneEl
+                .querySelector("#score")
+                .setAttribute(
+                  "text",
+                  "value",
+                  "Score: " +
+                    (parseInt(
+                      sceneEl
+                        .querySelector("#score")
+                        .getAttribute("text")
+                        .value.split(": ")[1]
+                    ) +
+                      1)
+                );
+            }
+          });
+        },
+      });
+    </script>
+  </head>
+
+  <body style="margin: 0; overflow: hidden">
+    <!-- AR scene -->
+    <a-scene embedded arjs>
+      <!-- Camera with AR.js tracking -->
+      <a-entity id="camera" camera look-controls></a-entity>
+
+      <!-- Marker-based AR: Hiro marker to display the coins -->
+      <a-marker preset="hiro">
+        <!-- Coin Model -->
+        <a-gltf-model
+          src="chinese_coin.glb"
+          position="0 1.5 0"
+          scale="0.5 0.5 0.5"
+          collect-coin
+        ></a-gltf-model>
+
+        <a-gltf-model
+          src="chinese_coin.glb"
+          position="2 1.5 0"
+          scale="0.5 0.5 0.5"
+          collect-coin
+        ></a-gltf-model>
+      </a-marker>
+
+      <!-- Score Display -->
+      <a-text
+        id="score"
+        value="Score: 0"
+        position="0 2 -5"
+        color="#FFF"
+      ></a-text>
+    </a-scene>
+  </body>
+</html>
